@@ -1,0 +1,3 @@
+[submodule "simulator/AirSim"]
+	path = simulator/AirSim
+	url = https://github.com/hngenc/AirSim.git
