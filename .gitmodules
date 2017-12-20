@@ -1,3 +1,6 @@
 [submodule "simulator/AirSim"]
 	path = simulator/AirSim
 	url = https://github.com/hngenc/AirSim.git
+[submodule "mavbench/apps"]
+	path = mavbench/apps
+	url = https://github.com/zaddan/MAV-bench-Apps.git
