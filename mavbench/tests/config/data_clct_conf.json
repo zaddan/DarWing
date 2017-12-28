@@ -1,0 +1,15 @@
+
+
+{
+	"game_path" : "C:\Users\Behzad\Desktop\Airsim_game\Test\WindowsNoEditor\MyProject.exe",
+		"usr_name": "nvidia" ,
+		"pass_code":  "nvidia",
+		"host_to_cnct_to": "10.145.49.112",
+		"mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
+		"application": "follow_the_leader", 
+		"number_of_runs": 2,
+		"termination": {
+			"time_based": "true",
+			"time_to_terminate": 20
+  }  
+}
