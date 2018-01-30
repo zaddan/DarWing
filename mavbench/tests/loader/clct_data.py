@@ -7,11 +7,12 @@ from data_clct_conf_class import *
 from control_unreal import *
 import traceback
 import signal
-
+from scp import SCPClient
 import paramiko
 import sys
-
-data_clct_conf_file_addr = "..\configs\data_clct_conf.json"
+from shutil import copy 
+import time
+data_clct_conf_file_addr = "..\config\data_clct_conf.json"
 game_path = "" #C:\Users\Behzad\Desktop\Airsim_game\Test\WindowsNoEditor\MyProject.exe"
 shell = "" 
 ssh_hndl = ""
@@ -35,7 +36,7 @@ def ssh(data_clct_conf_obj):
             22,
             data_clct_conf_obj.get_config_data()["usr_name"],
             data_clct_conf_obj.get_config_data()["pass_code"])
-    
+     #return ssh_handl 
 
 
 def start_unreal(data_clct_conf_obj):
@@ -89,7 +90,8 @@ def schedule_tasks(data_clct_conf_obj):
     #command =  ["./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh", "|","roslaunch","package_delivery", "package_delivery"]
     ros_launch_cmd = get_ros_cmd(data_clct_conf_obj) 
     run_time_supervisor_cmd = get_supervisor_cmd(data_clct_conf_obj)
-    all_cmds = ros_launch_cmd + "|" + run_time_supervisor_cmd;
+    pre_req_cmds = "./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh"
+    all_cmds = pre_req_cmds +  "|" + ros_launch_cmd + "|" + run_time_supervisor_cmd;
     #-------- 
     #--- schedule commands 
     #-------- 
@@ -108,6 +110,19 @@ def schedule_tasks(data_clct_conf_obj):
     
     return result
 
+def copy_results_over(data_clct_conf_obj):
+   global ssh_hndl
+   mav_bench_dir = data_clct_conf_obj.get_config_data()["mav_bench_dir"]
+   application = data_clct_conf_obj.get_config_data()["application"]
+   stats_file_name_on_comp_computer = data_clct_conf_obj.get_config_data()["stats_file_on_comp_computer"]
+   stats_dir_on_host = data_clct_conf_obj.get_config_data()["stats_dir_on_host"]
+
+
+   data_addr = mav_bench_dir +"/data/"+application+"/" + stats_file_name_on_comp_computer
+   scp_hndl = SCPClient(ssh_hndl.get_transport()) 
+   scp_hndl.get(data_addr)
+   copy(stats_file_name_on_comp_computer, stats_dir_on_host);  
+# os.system("" + stats_file_name_on_comp_computer + " " +  stats_dir_on_host) 
 
 def restart_unreal():
     restart_level();
@@ -121,7 +136,7 @@ def parse_results(result):
 
 
 def minimize_the_window():
-    time.sleep(2);
+    time.sleep(5);
     Minimize = win32gui.GetForegroundWindow()
     win32gui.ShowWindow(Minimize, win32con.SW_MINIMIZE) 
 
@@ -132,20 +147,25 @@ def signal_handler(signal, frame):
 
 
 def main():
-    signal.signal(signal.SIGINT, signal_handler)
     try:
 	data_clct_conf_obj = data_clct_conf(data_clct_conf_file_addr) #parse config file and instantiate a 
-	start_unreal(data_clct_conf_obj)
-	minimize_the_window()
-	#data_clct_conf object
+        """ 
+	for i in range(0,10):
+		start_unreal(data_clct_conf_obj)
+		time.sleep(10);
+		stop_unreal();	
+        #sys.exit(0)
+        """	
+	#minimize_the_window()
 	ssh(data_clct_conf_obj)     
-
 	#-- start collecting data 
-	for  _ in range(0,data_clct_conf_obj.get_config_data()["number_of_runs"]):
+	for  _ in range(0, data_clct_conf_obj.get_config_data()["number_of_runs"]):
 		result = schedule_tasks(data_clct_conf_obj)
+                copy_results_over(data_clct_conf_obj);
 		parse_results(result)
 		restart_unreal()
-		stop_unreal() 
+
+	stop_unreal() 
 	#print result.return_code
 	#print result.output
     except Exception as e:

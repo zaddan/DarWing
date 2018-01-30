@@ -2,7 +2,7 @@ import os
 from subprocess import call, Popen
 
 def messages_dir():
-	return os.path.expanduser("~/Documents/AirSim");
+	return os.path.expanduser("~/Documents/AirSim/ok");
 
 def start_game(path, in_editor=False):
 	if in_editor:
