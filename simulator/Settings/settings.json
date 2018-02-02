@@ -1,0 +1,50 @@
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingdVersion": 1.0,
+  "CaptureSettings": [
+    {
+      "ImageType": 0,
+
+      "Width": 512,
+      "Height": 288
+    },
+    {
+      "ImageType": 1,
+
+      "Width": 512,
+      "Height": 288
+    }
+  ],
+  "mass": 2.0,
+  "mass_coeff":  0.22,
+  "vxy_coeff":  -1.526,
+  "axy_coeff" :  3.934,
+   "vxy_axy_coeffs" :  0.968,
+  "vz_coeff":  18.125,
+   "az_coeff":  96.613,
+   "vz_az_coeff" :  -1.085,
+    "one_coeff":  443.9, 
+  "SimMode":  "Multirotor" ,
+  "gimbal": true,
+  "SubWindows": [
+    {
+      "WindowID": 0,
+      "CameraID": 0,
+      "ImageType": 3,
+      "Visible": false
+    },
+    {
+      "WindowID": 1,
+      "CameraID": 0,
+      "ImageType": 5,
+      "Visible": false
+    },
+    {
+      "WindowID": 2,
+      "CameraID": 0,
+      "ImageType": 0,
+      "Visible": false
+    }
+
+  ]
+}
