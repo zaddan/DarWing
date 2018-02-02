@@ -1,16 +1,16 @@
 
 
 {
-	"game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\MyProject.exe",
+	"game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\WindowsNoEditor\\Blocks.exe",
 		"usr_name": "nvidia" ,
 		"pass_code":  "nvidia",
 		"host_to_cnct_to": "10.145.2.182",
 		"mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
 		"application": "package_delivery", 
-		"number_of_runs": 1,
+		"number_of_runs": 5,
 		"termination": {
 			"time_based": "true",
-			"time_to_terminate":20 
+			"time_to_terminate":25 
 		}, 
 		"stats_dir_on_host": "C:\\Users\\Behzad\\Documents\\AirSim",
 	        "stats_file_on_comp_computer": "stats.json"

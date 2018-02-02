@@ -2,7 +2,7 @@ import os
 from os import sys
 import json 
 
-class data_clct_conf:
+class DataClctConf:
     def __init__(self, input_file_addr):
         self.input_file_addr = input_file_addr #input file to parse
         self.set_config_data();

@@ -1,4 +1,4 @@
-import spur
+#import spur
 import os 
 import win32gui, win32con
 import time
@@ -12,35 +12,23 @@ import paramiko
 import sys
 from shutil import copy 
 import time
+
 data_clct_conf_file_addr = "..\config\data_clct_conf.json"
-game_path = "" #C:\Users\Behzad\Desktop\Airsim_game\Test\WindowsNoEditor\MyProject.exe"
-shell = "" 
-ssh_hndl = ""
 
 
-def ssh(data_clct_conf_obj):
-    global shell
-    global ssh_hndl
-    """ 
-    shell = spur.SshShell(hostname=data_clct_conf_obj.get_config_data()["host_to_cnct_to"],
-            username=data_clct_conf_obj.get_config_data()["usr_name"],
-            password=data_clct_conf_obj.get_config_data()["pass_code"],
-            missing_host_key=spur.ssh.MissingHostKey.accept)
-    """ 
-     
+def creat_ssh_client(data_clct_conf_obj):
+    
     # paramiko
-    ssh_hndl=paramiko.SSHClient()
-    ssh_hndl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client=paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh_hndl.connect(data_clct_conf_obj.get_config_data()["host_to_cnct_to"],
+    ssh_client.connect(data_clct_conf_obj.get_config_data()["host_to_cnct_to"],
             22,
             data_clct_conf_obj.get_config_data()["usr_name"],
             data_clct_conf_obj.get_config_data()["pass_code"])
-     #return ssh_handl 
-
+    return ssh_client 
 
 def start_unreal(data_clct_conf_obj):
-    global game_path 
     game_path =  data_clct_conf_obj.get_config_data()["game_path"]
     if not(os.path.isfile(game_path)):
         print "file:" + game_path + " doesn't exist"
@@ -67,7 +55,6 @@ def get_ros_cmd(data_clct_conf_obj):
         print "this application not defined"
         sys.exit()
 
-
 def get_supervisor_cmd(data_clct_conf_obj):
    mav_bench_dir = data_clct_conf_obj.get_config_data()["mav_bench_dir"]
    termination =  data_clct_conf_obj.get_config_data()["termination"]
@@ -79,50 +66,36 @@ def get_supervisor_cmd(data_clct_conf_obj):
             " " +  str(termination["time_to_terminate"] )
 
 
-def schedule_tasks(data_clct_conf_obj):
-    global shell 
-    global ssh_hndl
-   
- 
-    #-------- 
-    #--- cmds to schedul 
-    #-------- 
-    #command =  ["./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh", "|","roslaunch","package_delivery", "package_delivery"]
+def get_pre_mission_cmd():
+    return "./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh"
+
+def schedule_tasks(data_clct_conf_obj, ssh_client):
+    
+    #--- cmds to schedul e
     ros_launch_cmd = get_ros_cmd(data_clct_conf_obj) 
     run_time_supervisor_cmd = get_supervisor_cmd(data_clct_conf_obj)
-    pre_req_cmds = "./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh"
-    all_cmds = pre_req_cmds +  "|" + ros_launch_cmd + "|" + run_time_supervisor_cmd;
-    #-------- 
-    #--- schedule commands 
-    #-------- 
-    #--- spur
-    #result = shell.run(ros_launch_cmd, allow_error=True)
-    #print result.output
-   
+    pre_mission_cmds = get_pre_mission_cmd()
+    all_cmds = run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd 
     #--- pramiko
-    stdin,stdout,stderr=ssh_hndl.exec_command(all_cmds, get_pty=True)
+    stdin,stdout,stderr= ssh_client.exec_command(all_cmds, get_pty=True)
     outlines = stdout.readlines() 
     result=''.join(outlines)
     print(result)
     # errlines = stderr.readlines() 
     # resp_err=''.join(errlines)
     # print(resp_err)
-    
     return result
 
-def copy_results_over(data_clct_conf_obj):
-   global ssh_hndl
+def copy_results_over(data_clct_conf_obj, ssh_client):
    mav_bench_dir = data_clct_conf_obj.get_config_data()["mav_bench_dir"]
    application = data_clct_conf_obj.get_config_data()["application"]
    stats_file_name_on_comp_computer = data_clct_conf_obj.get_config_data()["stats_file_on_comp_computer"]
    stats_dir_on_host = data_clct_conf_obj.get_config_data()["stats_dir_on_host"]
-
-
    data_addr = mav_bench_dir +"/data/"+application+"/" + stats_file_name_on_comp_computer
-   scp_hndl = SCPClient(ssh_hndl.get_transport()) 
-   scp_hndl.get(data_addr)
+   
+   scp_client = SCPClient(ssh_client.get_transport()) 
+   scp_client.get(data_addr)
    copy(stats_file_name_on_comp_computer, stats_dir_on_host);  
-# os.system("" + stats_file_name_on_comp_computer + " " +  stats_dir_on_host) 
 
 def restart_unreal():
     restart_level();
@@ -130,10 +103,8 @@ def restart_unreal():
 def stop_unreal():
     stop_game();
 
-
 def parse_results(result):
     return 
-
 
 def minimize_the_window():
     time.sleep(5);
@@ -145,32 +116,26 @@ def signal_handler(signal, frame):
 	stop_unreal()
 	sys.exit(0)
 
-
 def main():
     try:
-	data_clct_conf_obj = data_clct_conf(data_clct_conf_file_addr) #parse config file and instantiate a 
-        """ 
-	for i in range(0,10):
-		start_unreal(data_clct_conf_obj)
-		time.sleep(10);
-		stop_unreal();	
-        #sys.exit(0)
-        """	
-	#minimize_the_window()
-	ssh(data_clct_conf_obj)     
-	#-- start collecting data 
-	for  _ in range(0, data_clct_conf_obj.get_config_data()["number_of_runs"]):
-		result = schedule_tasks(data_clct_conf_obj)
-                copy_results_over(data_clct_conf_obj);
-		parse_results(result)
-		restart_unreal()
+        data_clct_conf_obj = DataClctConf(data_clct_conf_file_addr) #parse config file and instantiate a 
+        num_of_runs = data_clct_conf_obj.get_config_data()["number_of_runs"]
+        start_unreal(data_clct_conf_obj)
+	ssh_client = creat_ssh_client(data_clct_conf_obj)     
+        #minimize_the_window()
+        #-- start collecting data 
+	for  __  in xrange(num_of_runs):
+            result = schedule_tasks(data_clct_conf_obj, ssh_client)
+            #copy_results_over(data_clct_conf_obj, ssh_client);
+            #parse_results(result)
+	    restart_unreal()
 
 	stop_unreal() 
-	#print result.return_code
-	#print result.output
+
     except Exception as e:
+	pass
     	print traceback.format_exception(*sys.exc_info())
-	stop_unreal()
+	#stop_unreal()
 
 if __name__ == "__main__":
     main()
