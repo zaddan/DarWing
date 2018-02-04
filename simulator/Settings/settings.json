@@ -15,17 +15,19 @@
       "Height": 288
     }
   ],
-   
-   "mass": 2.0,
-  "mass_coeff":  0.22,
-  "vxy_coeff":  -1.526,
-  "axy_coeff" :  3.934,
-   "vxy_axy_coeff" :  0.968,
-  "vz_coeff":  18.125,
-   "az_coeff":  96.613,
-   "vz_az_coeff" :  -1.085,
-    "one_coeff":  443.9, 
-  "vxy_wxy_coeff":  0,
+
+  "EnergyModelSettings": {
+    "mass": 2.0,
+    "mass_coeff": 0.22,
+    "vxy_coeff": -1.526,
+    "axy_coeff": 3.934,
+    "vxy_axy_coeff": 0.968,
+    "vz_coeff": 18.125,
+    "az_coeff": 96.613,
+    "vz_az_coeff": -1.085,
+    "one_coeff": 443.9,
+    "vxy_wxy_coeff": 0
+  },
     "SimMode":  "Multirotor" ,
   "gimbal": true,
   "SubWindows": [
@@ -51,7 +53,7 @@
   ],
   "Recording": {
     "RecordInterval": 0.5,
-    "RocordUponStart": true,
+    "RocordUponStart": false,
     "UseTimeStampsForRecording":  false
 
  }
