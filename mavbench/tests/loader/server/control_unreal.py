@@ -1,5 +1,5 @@
 import os
-from subprocess import call, Popen
+from subprocess import call, Popen, PIPE
 
 def messages_dir():
 	return os.path.expanduser("~/Documents/AirSim");
@@ -8,8 +8,7 @@ def start_game(path, in_editor=False):
 	if in_editor:
 		print("Not impolemented yet")
 	else:
-		Popen(path)
-
+		Popen(path, stdin=PIPE) 
 def stop_game():
 	f = open(os.path.join(messages_dir(), "exit"), "w");
 	f.close()
