@@ -125,7 +125,7 @@ def main():
 	ssh_client = creat_ssh_client(data_clct_conf_obj)     
         #minimize_the_window()
         #-- start collecting data 
-	for  __  in xrange(num_of_runs):
+	for  __  in range(0, num_of_runs):
             result = schedule_tasks(data_clct_conf_obj, ssh_client)
             #copy_results_over(data_clct_conf_obj, ssh_client);
             #parse_results(result)
