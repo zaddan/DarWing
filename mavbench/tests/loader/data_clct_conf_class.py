@@ -9,7 +9,7 @@ class DataClctConf:
 
     def set_config_data(self):
         if not(os.path.isfile(self.input_file_addr)):
-            print "file:" + self.input_file_addr+ " doesn't exist"
+            print("file:" + self.input_file_addr+ " doesn't exist")
             sys.exit()
         with open(self.input_file_addr) as data_file:
             data = json.loads(data_file.read())

@@ -1,13 +1,14 @@
 
 
 {
-	"game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\WindowsNoEditor\\Blocks.exe",
+	"game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\Blocks.exe",
 		"usr_name": "nvidia" ,
 		"pass_code":  "nvidia",
 		"host_to_cnct_to": "10.145.2.182",
-		"mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
+	    "catkin_dir": "/home/nvidia/catkin_ws",
+        "mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
 		"application": "package_delivery", 
-		"number_of_runs": 5,
+		"number_of_runs": 1,
 		"termination": {
 			"time_based": "true",
 			"time_to_terminate":25 

@@ -31,7 +31,7 @@ def creat_ssh_client(data_clct_conf_obj):
 def start_unreal(data_clct_conf_obj):
     game_path =  data_clct_conf_obj.get_config_data()["game_path"]
     if not(os.path.isfile(game_path)):
-        print "file:" + game_path + " doesn't exist"
+        print("file:" + game_path + " doesn't exist")
         sys.exit()
     
     start_game(game_path); 
@@ -52,7 +52,7 @@ def get_ros_cmd(data_clct_conf_obj):
     elif (application == "follow_the_leader"):
         return "roslaunch follow_the_leader follow_the_leader.launch"
     else:
-        print "this application not defined"
+        print("this application not defined")
         sys.exit()
 
 def get_supervisor_cmd(data_clct_conf_obj):
@@ -72,10 +72,11 @@ def get_pre_mission_cmd():
 def schedule_tasks(data_clct_conf_obj, ssh_client):
     
     #--- cmds to schedul e
+    src_ros_cmd = "source " + data_clct_conf_obj.get_config_data()["catkin_dir"]+"/devel/setup.bash"
     ros_launch_cmd = get_ros_cmd(data_clct_conf_obj) 
     run_time_supervisor_cmd = get_supervisor_cmd(data_clct_conf_obj)
     pre_mission_cmds = get_pre_mission_cmd()
-    all_cmds = run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd 
+    all_cmds = src_ros_cmd + ";" + run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd 
     #--- pramiko
     stdin,stdout,stderr= ssh_client.exec_command(all_cmds, get_pty=True)
     outlines = stdout.readlines() 
@@ -134,7 +135,7 @@ def main():
 
     except Exception as e:
 	pass
-    	print traceback.format_exception(*sys.exc_info())
+    	print(traceback.format_exception(*sys.exc_info()))
 	#stop_unreal()
 
 if __name__ == "__main__":
