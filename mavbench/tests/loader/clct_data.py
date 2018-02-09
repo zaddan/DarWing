@@ -117,22 +117,41 @@ def signal_handler(signal, frame):
 	stop_unreal()
 	sys.exit(0)
 
+def write_to_stats_file(stat_file_addr, string_to_write, data_clct_conf_obj, ssh_client):
+        python_file_to_run = data_clct_conf_obj.get_config_data()["mav_bench_dir"]+ "common/python_files/write_to_file.py"
+        cmd = "python" + " " + python_file_to_run + " " + stat_file_addr + " " + string_to_write
+        stdin,stdout,stderr= ssh_client.exec_command(cmd, get_pty=True)
+        outlines = stdout.readlines() 
+        result=''.join(outlines)
+        print(result)
+        # errlines = stderr.readlines() 
+        # resp_err=''.join(errlines)
+        # print(resp_err)
+        return result
+
+
 def main():
     try:
         data_clct_conf_obj = DataClctConf(data_clct_conf_file_addr) #parse config file and instantiate a 
         num_of_runs = data_clct_conf_obj.get_config_data()["number_of_runs"]
-        start_unreal(data_clct_conf_obj)
+        #start_unreal(data_clct_conf_obj)
 	ssh_client = creat_ssh_client(data_clct_conf_obj)     
+        stat_file_addr = data_clct_conf_obj.get_config_data()["mav_bench_dir"]+ "data/"+ data_clct_conf_obj.get_config_data()["application"]+"/"+"stats.json"
         #minimize_the_window()
+        write_to_stats_file(stat_file_addr, '{"experiment_set":[',  data_clct_conf_obj, ssh_client)
         #-- start collecting data 
-	for  __  in range(0, num_of_runs):
+	for  run_ctr  in range(0, num_of_runs):
             result = schedule_tasks(data_clct_conf_obj, ssh_client)
             #copy_results_over(data_clct_conf_obj, ssh_client);
             #parse_results(result)
 	    restart_unreal()
-
-	stop_unreal() 
-
+            if (run_ctr < num_of_runs - 1): 
+                write_to_stats_file(stat_file_addr, '"experiment":'+str(run_ctr)+"},",  data_clct_conf_obj, ssh_client)
+        stop_unreal() 
+        
+        
+        write_to_stats_file(stat_file_addr, '"experiment":'+str(run_ctr)+"}",  data_clct_conf_obj, ssh_client)
+        write_to_stats_file(stat_file_addr, "]}",  data_clct_conf_obj, ssh_client)
     except Exception as e:
 	pass
     	print(traceback.format_exception(*sys.exc_info()))
