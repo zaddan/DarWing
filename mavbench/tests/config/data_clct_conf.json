@@ -9,7 +9,7 @@
 		"number_of_runs": 2,
 		"termination": {
 			"time_based": "true",
-			"time_to_terminate":45 
+			"time_to_terminate":70 
 		}, 
 		"stats_dir_on_host": "C:\\Users\\Behzad\\Documents\\AirSim",
 	        "stats_file_on_comp_computer": "stats.json"

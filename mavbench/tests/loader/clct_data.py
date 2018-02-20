@@ -13,7 +13,14 @@ import sys
 from shutil import copy 
 import time
 
-data_clct_conf_file_addr = "..\config\data_clct_conf.json"
+import argparse
+parser = argparse.ArgumentParser(description='DARwing collect data.')
+parser.add_argument('--config', metavar='c', type=str,
+                    default="..\config\data_clct_conf.json",
+                    help='config json file path')
+
+args = parser.parse_args()
+data_clct_conf_file_addr = args.config
 
 
 def creat_ssh_client(data_clct_conf_obj):
@@ -43,6 +50,7 @@ def get_ros_cmd(data_clct_conf_obj):
     
     if (application == "package_delivery"):
         return "roslaunch package_delivery package_delivery.launch"
+        #return "roslaunch package_delivery y.launch"
     elif (application == "scanning"):
         return "roslaunch package_delivery scanning.launch"
     elif (application == "mapping"):
@@ -137,6 +145,8 @@ def main():
         #start_unreal(data_clct_conf_obj)
 	ssh_client = creat_ssh_client(data_clct_conf_obj)     
         stat_file_addr = data_clct_conf_obj.get_config_data()["mav_bench_dir"]+ "data/"+ data_clct_conf_obj.get_config_data()["application"]+"/"+"stats.json"
+        application = data_clct_conf_obj.get_config_data()["application"]
+        
         #minimize_the_window()
         write_to_stats_file(stat_file_addr, '{"experiment_set":[',  data_clct_conf_obj, ssh_client)
         #-- start collecting data 
@@ -144,7 +154,11 @@ def main():
             result = schedule_tasks(data_clct_conf_obj, ssh_client)
             #copy_results_over(data_clct_conf_obj, ssh_client);
             #parse_results(result)
-	    restart_unreal()
+	    #time.sleep(5) 
+            restart_unreal()
+	    #time.sleep(5) 
+            restart_unreal()
+            write_to_stats_file(stat_file_addr, '"app":'+str(application)+",",  data_clct_conf_obj, ssh_client)
             if (run_ctr < num_of_runs - 1): 
                 write_to_stats_file(stat_file_addr, '"experiment":'+str(run_ctr)+"},",  data_clct_conf_obj, ssh_client)
         stop_unreal() 
