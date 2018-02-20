@@ -23,20 +23,20 @@ args = parser.parse_args()
 data_clct_conf_file_addr = args.config
 
 
-def creat_ssh_client(data_clct_conf_obj):
+def creat_ssh_client(user_setting):
     
     # paramiko
     ssh_client=paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh_client.connect(data_clct_conf_obj.get_config_data()["host_to_cnct_to"],
+    ssh_client.connect(user_setting["host_to_cnct_to"],
             22,
-            data_clct_conf_obj.get_config_data()["usr_name"],
-            data_clct_conf_obj.get_config_data()["pass_code"])
+            user_setting["usr_name"],
+            user_setting["pass_code"])
     return ssh_client 
 
-def start_unreal(data_clct_conf_obj):
-    game_path =  data_clct_conf_obj.get_config_data()["game_path"]
+def start_unreal(user_setting):
+    game_path =  user_setting["game_path"]
     if not(os.path.isfile(game_path)):
         print("file:" + game_path + " doesn't exist")
         sys.exit()
@@ -45,8 +45,8 @@ def start_unreal(data_clct_conf_obj):
     return
 
    
-def get_ros_cmd(data_clct_conf_obj):
-    application = data_clct_conf_obj.get_config_data()["application"]
+def get_ros_cmd(experiment_setting):
+    application = experiment_setting["application"]
     
     if (application == "package_delivery"):
         return "roslaunch package_delivery package_delivery.launch"
@@ -63,26 +63,26 @@ def get_ros_cmd(data_clct_conf_obj):
         print("this application not defined")
         sys.exit()
 
-def get_supervisor_cmd(data_clct_conf_obj):
-   mav_bench_dir = data_clct_conf_obj.get_config_data()["mav_bench_dir"]
-   termination =  data_clct_conf_obj.get_config_data()["termination"]
-
+def get_supervisor_cmd(user_setting, experiment_setting):
+   mav_bench_dir = user_setting["mav_bench_dir"]
+   termination =  experiment_setting["max_run_time"]
+   app = experiment_setting["application"]
    return  "python "+\
             mav_bench_dir+"run_time/supervisor.py" +\
             " " + mav_bench_dir  +\
-            " " + str(termination["time_based"]) + \
-            " " +  str(termination["time_to_terminate"] )
+            " " + app +\
+            " " +  str(termination)
 
 
 def get_pre_mission_cmd():
     return "./catkin_ws/src/mav-bench/misc/pre_mission_cmds.sh"
 
-def schedule_tasks(data_clct_conf_obj, ssh_client):
+def schedule_tasks(user_setting, experiment_setting, ssh_client):
     
     #--- cmds to schedul e
-    src_ros_cmd = "source " + data_clct_conf_obj.get_config_data()["catkin_dir"]+"/devel/setup.bash"
-    ros_launch_cmd = get_ros_cmd(data_clct_conf_obj) 
-    run_time_supervisor_cmd = get_supervisor_cmd(data_clct_conf_obj)
+    src_ros_cmd = "source " + user_setting["catkin_dir"]+"/devel/setup.bash"
+    ros_launch_cmd = get_ros_cmd(experiment_setting) 
+    run_time_supervisor_cmd = get_supervisor_cmd(user_setting, experiment_setting)
     pre_mission_cmds = get_pre_mission_cmd()
     all_cmds = src_ros_cmd + ";" + run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd 
     #--- pramiko
@@ -94,7 +94,7 @@ def schedule_tasks(data_clct_conf_obj, ssh_client):
     # resp_err=''.join(errlines)
     # print(resp_err)
     return result
-
+"""
 def copy_results_over(data_clct_conf_obj, ssh_client):
    mav_bench_dir = data_clct_conf_obj.get_config_data()["mav_bench_dir"]
    application = data_clct_conf_obj.get_config_data()["application"]
@@ -105,6 +105,7 @@ def copy_results_over(data_clct_conf_obj, ssh_client):
    scp_client = SCPClient(ssh_client.get_transport()) 
    scp_client.get(data_addr)
    copy(stats_file_name_on_comp_computer, stats_dir_on_host);  
+"""
 
 def restart_unreal():
     restart_level();
@@ -125,8 +126,8 @@ def signal_handler(signal, frame):
 	stop_unreal()
 	sys.exit(0)
 
-def write_to_stats_file(stat_file_addr, string_to_write, data_clct_conf_obj, ssh_client):
-        python_file_to_run = data_clct_conf_obj.get_config_data()["mav_bench_dir"]+ "common/python_files/write_to_file.py"
+def write_to_stats_file(stat_file_addr, string_to_write, user_setting, ssh_client):
+        python_file_to_run = user_setting["mav_bench_dir"]+ "common/python_files/write_to_file.py"
         cmd = "python" + " " + python_file_to_run + " " + stat_file_addr + " " + string_to_write
         stdin,stdout,stderr= ssh_client.exec_command(cmd, get_pty=True)
         outlines = stdout.readlines() 
@@ -141,35 +142,38 @@ def write_to_stats_file(stat_file_addr, string_to_write, data_clct_conf_obj, ssh
 def main():
     try:
         data_clct_conf_obj = DataClctConf(data_clct_conf_file_addr) #parse config file and instantiate a 
-        num_of_runs = data_clct_conf_obj.get_config_data()["number_of_runs"]
-        #start_unreal(data_clct_conf_obj)
-	ssh_client = creat_ssh_client(data_clct_conf_obj)     
-        stat_file_addr = data_clct_conf_obj.get_config_data()["mav_bench_dir"]+ "data/"+ data_clct_conf_obj.get_config_data()["application"]+"/"+"stats.json"
-        application = data_clct_conf_obj.get_config_data()["application"]
+        user_setting =  data_clct_conf_obj.get_config_data()["user_setting"]
+        experiment_setting_list =  data_clct_conf_obj.get_config_data()["experiment_setting_list"]
+        total_run_ctr = 0
+        for  experiment_setting in  experiment_setting_list:
+            num_of_runs = experiment_setting["number_of_runs"]
+            application = experiment_setting["application"]
+            #start_unreal(user_setting)
+            ssh_client = creat_ssh_client(user_setting)     
+            stat_file_addr = user_setting["mav_bench_dir"]+ "data/"+ application+"/"+"stats.json"
+            write_to_stats_file(stat_file_addr, '{\\"experiments\\":[',  user_setting, ssh_client)
+            #minimize_the_window()
+            #-- start collecting data 
+            for  experiment_run_ctr  in range(0, num_of_runs):
+                total_run_ctr += experiment_run_ctr 
+                result = schedule_tasks(user_setting, experiment_setting, ssh_client)
+                #copy_results_over(user_setting, ssh_client);
+                #parse_results(result)
+                #time.sleep(5) 
+                restart_unreal()
+                #time.sleep(5) 
+                restart_unreal()
+                write_to_stats_file(stat_file_addr, '\\"app\\":\\"'+str(application)+'\\",',  user_setting, ssh_client)
+                if (experiment_run_ctr < num_of_runs - 1): 
+                    write_to_stats_file(stat_file_addr, '\\"experiment_number\\":'+str(experiment_run_ctr)+"},",  user_setting, ssh_client)
         
-        #minimize_the_window()
-        write_to_stats_file(stat_file_addr, '{"experiment_set":[',  data_clct_conf_obj, ssh_client)
-        #-- start collecting data 
-	for  run_ctr  in range(0, num_of_runs):
-            result = schedule_tasks(data_clct_conf_obj, ssh_client)
-            #copy_results_over(data_clct_conf_obj, ssh_client);
-            #parse_results(result)
-	    #time.sleep(5) 
-            restart_unreal()
-	    #time.sleep(5) 
-            restart_unreal()
-            write_to_stats_file(stat_file_addr, '"app":'+str(application)+",",  data_clct_conf_obj, ssh_client)
-            if (run_ctr < num_of_runs - 1): 
-                write_to_stats_file(stat_file_addr, '"experiment":'+str(run_ctr)+"},",  data_clct_conf_obj, ssh_client)
         stop_unreal() 
-        
-        
-        write_to_stats_file(stat_file_addr, '"experiment":'+str(run_ctr)+"}",  data_clct_conf_obj, ssh_client)
-        write_to_stats_file(stat_file_addr, "]}",  data_clct_conf_obj, ssh_client)
+        write_to_stats_file(stat_file_addr, '\\"experiment_number\\":'+str(experiment_run_ctr)+"}",  user_setting, ssh_client)
+        write_to_stats_file(stat_file_addr, "]}",  user_setting, ssh_client)
     except Exception as e:
-	pass
-    	print(traceback.format_exception(*sys.exc_info()))
-	#stop_unreal()
+        pass
+        print(traceback.format_exception(*sys.exc_info()))
+        #stop_unreal()
 
 if __name__ == "__main__":
     main()
