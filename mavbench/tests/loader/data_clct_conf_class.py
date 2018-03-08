@@ -12,7 +12,8 @@ class DataClctConf:
             print("file:" + self.input_file_addr+ " doesn't exist")
             sys.exit()
         with open(self.input_file_addr) as data_file:
-            data = json.loads(data_file.read())
+            jstring = data_file.read().replace('nan', 'NaN')
+            data = json.loads(jstring)
             self.config_data = data
 
     def get_config_data(self):

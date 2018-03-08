@@ -1,23 +1,30 @@
 {
-   "user_setting":{	
-       "game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\Blocks.exe",
-       "usr_name": "nvidia" ,
-       "pass_code":  "nvidia",
-       "host_to_cnct_to": "10.157.90.135",
-       "catkin_dir": "/home/nvidia/catkin_ws",
-       "mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
-	   "stats_dir_on_host": "C:\\Users\\Behzad\\Documents\\AirSim",
-	   "stats_file_on_comp_computer": "stats.json"
-   },
-   "experiment_setting_list": [
-       {      
-           "application": "mapping", 
-           "number_of_runs": 2,
-           "max_run_time":9000 
-           
-		}
-
-   ]
+    "user_setting":{	
+        "game_path" : "C:\\Users\\Behzad\\Desktop\\Fo\\WindowsNoEditor\\Blocks.exe",
+        "usr_name": "nvidia" ,
+        "pass_code":  "nvidia",
+        "host_to_cnct_to": "10.157.90.135",
+        "catkin_dir": "/home/nvidia/catkin_ws",
+        "mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
+        "AirSim_dir": "C:\\Users\\Behzad\\Documents\\AirSim",
+        "stats_file_on_comp_computer": "stats.json"
+    },
+    "experiment_setting_list": [
+        {      
+            "application": "mapping", 
+            "ros_params": {
+                "nbvp/gain/range": 4.5,
+                "nbvp/tree/extension_range": 4,
+                "coverage_threshold": 7,
+                "planning_resolution":0.8,
+                "mapping_resolution": 0.1
+            },
+            "number_of_runs": 1,
+            "max_run_time":9000 ,
+            "processor_frequency":2035200,
+            "map_name": "cluttered_trees"
+        }
+    ]
 }
 
 

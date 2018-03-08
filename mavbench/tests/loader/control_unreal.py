@@ -15,7 +15,7 @@ def stop_game():
 	
 def change_level(level):
 	path = os.path.join(messages_dir(), "change_level.txt")
-	f = open(path, "w");
+        f = open(path, "w");
 	f.write(level)
 	f.close()
 	os.rename(path, os.path.join(messages_dir(), "change_level"))
