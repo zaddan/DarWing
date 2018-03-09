@@ -190,18 +190,29 @@ def main():
         experiment_set_ctr = 0 
         #write_to_stats_file(stat_file_addr, "{",  user_setting, ssh_client)
         #--- removing the file that triggers the char (only usefull for follow_the_leader) 
+        """ 
         try: 
             os.remove(user_setting["AirSim_dir"]+ "\\"+ "companion_comp_msgs.txt")
         except: 
             print "companion_com_msg doesn't exist to remove. This might be ok"
+        """
+        time.sleep(3) #there needs to be a sleep between restart and change_level
+        
         for  experiment_setting in  experiment_setting_list:
             num_of_runs = experiment_setting["number_of_runs"]
             application = experiment_setting["application"]
             ros_params =  experiment_setting["ros_params"]
             proc_freq = experiment_setting["processor_frequency"]
             stat_file_addr = user_setting["mav_bench_dir"]+"data/"+application+ "/"+"stats.json"
+            
+            try: 
+                    os.remove(user_setting["AirSim_dir"]+ "\\"+ "companion_comp_msgs.txt")
+            except:
+                print "companion_com_msg doesn't exist to remove. This might be ok"
             if ("map_name" in  experiment_setting.keys()):
                 change_level(experiment_setting["map_name"])
+            else:
+                restart_unreal()
             
             #start_unreal(user_setting)
             ssh_client = creat_ssh_client(user_setting)     
@@ -216,11 +227,12 @@ def main():
             #--- start collecting data 
             for  experiment_run_ctr  in range(0, num_of_runs):
                 total_run_ctr += 1
+                result = schedule_tasks(user_setting, experiment_setting, ssh_client)
+                
                 try: 
                     os.remove(user_setting["AirSim_dir"]+ "\\"+ "companion_comp_msgs.txt")
                 except:
                     print "companion_com_msg doesn't exist to remove. This might be ok"
-                result = schedule_tasks(user_setting, experiment_setting, ssh_client)
                 restart_unreal()
                 time.sleep(3) #there needs to be a sleep between restart and change_level
                 write_to_stats_file(stat_file_addr, '\t'+'\\"app\\":\\"'+str(application)+'\\",',  user_setting, ssh_client)

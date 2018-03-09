@@ -13,6 +13,7 @@ import json
 def generate_csv(data_clct_conf_file_addr):
     data_clct_conf_obj = DataClctConf(data_clct_conf_file_addr) 
     data = data_clct_conf_obj.get_config_data()
+    """  
     if not 'experiments_0' in data:
         print 'Cannot find 1st experiment named experiments_0. Json file might be broken.'
         exit(0)
@@ -20,9 +21,13 @@ def generate_csv(data_clct_conf_file_addr):
     if len(data.get('experiments_0')) <= 0:
         print 'experiments_0 does not have valid data. Json file might be broken.'
         exit(0)
-
-    stat_keys = data.get('experiments_0')[0].keys()
-    stat_keys.remove('topic_statistics')
+    """
+    
+    stat_keys = data.get(data.keys()[0])[0].keys()
+    try: 
+        stat_keys.remove('topic_statistics')
+    except:
+        print "topic_stats"
     stat_keys.sort()
     fstring = ''
     fstring = fstring + ','.join(stat_keys) + '\n'
@@ -70,7 +75,7 @@ def combine_json(file_list):
 def main():
     #copy first    
 #    combine_json(["../config/test_data.json", "../config/test_data2.json"])
-    generate_csv("./set_1.json")
+    generate_csv("./data_1.json")
         #sys.exit(0) 
         #copy back    
     #remove all the temps
