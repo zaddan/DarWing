@@ -75,7 +75,7 @@ def combine_json(file_list):
 def main():
     #copy first    
 #    combine_json(["../config/test_data.json", "../config/test_data2.json"])
-    generate_csv("./data_1.json")
+    generate_csv("./stats.json")
         #sys.exit(0) 
         #copy back    
     #remove all the temps
