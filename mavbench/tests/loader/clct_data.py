@@ -84,7 +84,7 @@ def get_pre_mission_cmd(application):
 def check_start_moving(user_setting, experiment_setting):
     time_to_move = False
     file_to_write_to =  user_setting["AirSim_dir"]+ "\\"+ "companion_comp_msgs.txt"
-    time.sleep(5)
+    time.sleep(12)
     file_to_write_to_handle.open(file_to_write_to, "w")
     file_to_write_to_handle.close()
     sys.exit(0) 
@@ -101,8 +101,14 @@ def check_start_moving(user_setting, experiment_setting):
     """
 
 def signal_start_moving(file_to_write_to):
-    time.sleep(40)
+    time.sleep(30)
     open(file_to_write_to, "w").close()
+
+def get_bind_node_cmd(platform):
+    if (platform == "tx2"): 
+        return "python ./catkin_ws/src/mav-bench/run_time/bind_nodes.py"
+    else:
+        return "echo hello"
 
 def schedule_tasks(user_setting, experiment_setting, ssh_client):
     #--- cmds to schedul e
@@ -111,8 +117,9 @@ def schedule_tasks(user_setting, experiment_setting, ssh_client):
     run_time_supervisor_cmd = get_supervisor_cmd(user_setting, experiment_setting)
     #run_time_supervisor_cmd = ""#get_supervisor_cmd(user_setting, experiment_setting)
     pre_mission_cmds = get_pre_mission_cmd(experiment_setting["application"])
-    all_cmds = src_ros_cmd + ";" + run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd 
-    
+    platform = user_setting["platform"] 
+    all_cmds = src_ros_cmd + ";" + run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd  + "|" + get_bind_node_cmd(platform)
+    #all_cmds = src_ros_cmd + ";" + run_time_supervisor_cmd + "& " +  pre_mission_cmds +  "|" + ros_launch_cmd
     p = Process(target= signal_start_moving, args=(user_setting["AirSim_dir"]+ "\\"+ "companion_comp_msgs.txt",))
     if (experiment_setting["application"] == "follow_the_leader"):
         p.start()
@@ -246,7 +253,7 @@ def main():
             
             write_to_stats_file(stat_file_addr, "}],",  user_setting, ssh_client)
 
-        stop_unreal() 
+        #stop_unreal() 
         #write_to_stats_file(stat_file_addr, '\\"experiment_number\\":'+str(experiment_run_ctr)+"}",  user_setting, ssh_client)
         #write_to_stats_file(stat_file_addr, "]}",  user_setting, ssh_client)
     except Exception as e:

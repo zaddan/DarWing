@@ -7,20 +7,37 @@
         "catkin_dir": "/home/nvidia/catkin_ws",
         "mav_bench_dir" : "/home/nvidia/catkin_ws/src/mav-bench/",
         "AirSim_dir": "C:\\Users\\Behzad\\Documents\\AirSim",
-        "stats_file_on_comp_computer": "stats.json"
+        "stats_file_on_comp_computer": "stats.json",
+        "platform": "tx2"
     },
     "experiment_setting_list": [
         {      
             "application": "follow_the_leader", 
             "ros_params": {
-                "nbvp/gain/range": 4.5,
-                "nbvp/tree/extension_range": 4,
-                "coverage_threshold": 20,
-                "planning_resolution":0.8,
+                "sensor_max_range": 7,  
+                "nbvp/gain/range": 6.5,
+                "nbvp/tree/extension_range": 6,
+                "coverage_threshold": 85,
+                "planning_resolution":0.15,
                 "mapping_resolution": 0.1
             },
-            "number_of_runs": 1,
-            "max_run_time":100 ,
+            "number_of_runs": 7,
+            "max_run_time":200,
+            "processor_frequency":2035200,
+            "map_name": "follow_the_leader"
+        },
+        {      
+            "application": "follow_the_leader", 
+            "ros_params": {
+                "sensor_max_range": 7,  
+                "nbvp/gain/range": 6.5,
+                "nbvp/tree/extension_range": 6,
+                "coverage_threshold": 85,
+                "planning_resolution":0.15,
+                "mapping_resolution": 0.1
+            },
+            "number_of_runs": 7,
+            "max_run_time":200,
             "processor_frequency":2035200,
             "map_name": "follow_the_leader"
         }

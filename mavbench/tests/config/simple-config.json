@@ -13,15 +13,15 @@
         {      
             "application": "mapping", 
             "ros_params": {
-                "nbvp/gain/range": 4.5,
-                "nbvp/tree/extension_range": 4,
-                "sensor_max_range": 5,   
-                "planning_resolution":0.25,
-                "coverage_threshold": 80,
+                "nbvp/gain/range": 12.5,
+                "nbvp/tree/extension_range": 12,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.4,
+                "coverage_threshold": 95,
                 "mapping_resolution": 0.1
             },
-            "number_of_runs": 2,
-            "max_run_time":1200 ,
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
             "processor_frequency":2035200,
             "map_name": "mapping_high_featured"
         },
@@ -30,13 +30,13 @@
             "ros_params": {
                 "nbvp/gain/range": 8.5,
                 "nbvp/tree/extension_range": 8,
-                "sensor_max_range": 10,   
-                "planning_resolution":0.15,
-                "coverage_threshold": 80,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.4,
+                "coverage_threshold": 95,
                 "mapping_resolution": 0.1
             },
-            "number_of_runs": 2,
-            "max_run_time":1200 ,
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
             "processor_frequency":2035200,
             "map_name": "mapping_high_featured"
         },
@@ -45,13 +45,58 @@
             "ros_params": {
                 "nbvp/gain/range": 4.5,
                 "nbvp/tree/extension_range": 4,
-                "sensor_max_range": 10,   
-                "planning_resolution":0.15,
-                "coverage_threshold": 80,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.4,
+                "coverage_threshold": 95,
                 "mapping_resolution": 0.1
             },
-            "number_of_runs": 2,
-            "max_run_time":1200 ,
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
+            "processor_frequency":2035200,
+            "map_name": "mapping_high_featured"
+        },
+        {      
+            "application": "mapping", 
+            "ros_params": {
+                "nbvp/gain/range": 12.5,
+                "nbvp/tree/extension_range": 12,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.25,
+                "coverage_threshold": 95,
+                "mapping_resolution": 0.1
+            },
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
+            "processor_frequency":2035200,
+            "map_name": "mapping_high_featured"
+        },
+        {      
+            "application": "mapping", 
+            "ros_params": {
+                "nbvp/gain/range": 8.5,
+                "nbvp/tree/extension_range": 8,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.25,
+                "coverage_threshold": 95,
+                "mapping_resolution": 0.1
+            },
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
+            "processor_frequency":2035200,
+            "map_name": "mapping_high_featured"
+        },
+        {      
+            "application": "mapping", 
+            "ros_params": {
+                "nbvp/gain/range": 4.5,
+                "nbvp/tree/extension_range": 4,
+                "sensor_max_range": 15,   
+                "planning_resolution":0.25,
+                "coverage_threshold": 95,
+                "mapping_resolution": 0.1
+            },
+            "number_of_runs": 5,
+            "max_run_time":1500 ,
             "processor_frequency":2035200,
             "map_name": "mapping_high_featured"
         }
