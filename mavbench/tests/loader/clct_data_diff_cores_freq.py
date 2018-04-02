@@ -101,7 +101,7 @@ def check_start_moving(user_setting, experiment_setting):
     """
 
 def signal_start_moving(file_to_write_to):
-    time.sleep(140)
+    time.sleep(130)
     open(file_to_write_to, "w").close()
 
 def get_bind_node_cmd(platform):
@@ -189,6 +189,15 @@ def modify_freq(freq, ssh_client, num_of_core=6):
     outlines = stdout.readlines() 
     result=''.join(outlines)
     #print(result)
+def get_v_max(n_core, freq):
+    ctr = 0 
+    v_max_l = [1.4, 1.8, 1.95, 2.45, 3.0, 3.5, 3.0, 4.0, 4.0]
+    for freq_el in [806400, 1574400, 2035200]:
+        for core_el in [2,3,4]:
+            if (n_core == core_el) and (freq == freq_el):
+                return v_max_l[ctr]
+            ctr +=1
+    
 def main():
     try:
         data_clct_conf_obj = DataClctConf(data_clct_conf_file_addr) #parse config file and instantiate a 
@@ -207,11 +216,13 @@ def main():
         time.sleep(3) #there needs to be a sleep between restart and change_level
         
         for  experiment_setting in  experiment_setting_list:
-            for n_core in [4] :
-                for freq in [2035200]:
+            for n_core in [4,3,2] :
+                for freq in [2035200, 1574400, 806400]:
                     num_of_runs = experiment_setting["number_of_runs"]
                     application = experiment_setting["application"]
                     ros_params =  experiment_setting["ros_params"]
+                    if (application == "mapping" or application == "sar"):
+                        ros_params["v_max"] = get_v_max(n_core, freq)
                     #proc_freq = experiment_setting["processor_frequency"]
                     proc_freq = freq
                     num_of_core = n_core
