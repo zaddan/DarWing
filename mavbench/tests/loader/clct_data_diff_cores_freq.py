@@ -1,6 +1,6 @@
 #import spur
 import os 
-import win32gui, win32con
+#import win32gui, win32con
 import time
 from os import sys
 from data_clct_conf_class import *
@@ -191,7 +191,7 @@ def modify_freq(freq, ssh_client, num_of_core=6):
     #print(result)
 def get_v_max(n_core, freq):
     ctr = 0 
-    v_max_l = [1.4, 1.8, 1.95, 2.45, 3.0, 3.5, 3.0, 4.0, 4.0]
+    v_max_l = [1.0, 1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 2.0, 2.2]
     for freq_el in [806400, 1574400, 2035200]:
         for core_el in [2,3,4]:
             if (n_core == core_el) and (freq == freq_el):
